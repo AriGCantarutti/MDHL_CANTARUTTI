@@ -54,11 +54,11 @@ a {
 }
 
 #V1{
-    background-image: url(Imagenes/Banner1.jpg);
+    background-image: url(../Imagenes/Banner1.jpg);
 }
 
 #V2{
-    background-image: url(Imagenes/Banner2.jpg);
+    background-image: url(../Imagenes/Banner2.jpg);
 }
 
 #Img{
@@ -77,6 +77,14 @@ a {
 }
 
 article{
+    display: inline;
+    position: relative;
+    left: 600px;
+    bottom: 180px;
+    font-size: 17px;
+}
+
+aside{
     display: inline;
     position: relative;
     left: 600px;

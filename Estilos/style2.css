@@ -15,11 +15,11 @@
 }
 
 #Enc1, #Enc3 {
-    background-image: url(Imagenes/Banner1.jpg);
+    background-image: url(../Imagenes/Banner1.jpg);
 }
 
 #Enc2{    
-    background-image: url(Imagenes/Banner2.jpg);
+    background-image: url(../Imagenes/Banner2.jpg);
 }
 
 #main-title{
@@ -69,6 +69,13 @@ section h2 {
 }
 
 article {
+    margin-top: 50px;
+    margin-left: 350px;
+    font-size: 17px;
+    z-index: 1;
+}
+
+aside {
     margin-top: 50px;
     margin-left: 350px;
     font-size: 17px;
