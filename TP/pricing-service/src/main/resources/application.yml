@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/transportdb}
+    username: ${SPRING_DATASOURCE_USERNAME:transportuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:transportpass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8090/realms/tpi}
+logging:
+  level:
+    org.springframework: INFO
+    com.tpi: DEBUG
+app:
+  google-maps-key: ${GOOGLE_MAPS_API_KEY:}
+  fuel-price-per-litre: ${FUEL_PRICE_PER_LITRE:1.5}
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

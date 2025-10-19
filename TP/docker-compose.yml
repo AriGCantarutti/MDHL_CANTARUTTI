@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: transportdb
+      POSTGRES_USER: transportuser
+      POSTGRES_PASSWORD: transportpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tpi_network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    command: ["start-dev"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/transportdb
+      KC_DB_USERNAME: transportuser
+      KC_DB_PASSWORD: transportpass
+    depends_on:
+      - postgres
+    ports:
+      - "8090:8080"
+    networks:
+      - tpi_network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    environment:
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/tpi
+    depends_on:
+      - keycloak
+      - orders-service
+      - fleet-service
+      - warehouse-service
+      - pricing-service
+    ports:
+      - "8080:8080"
+    networks:
+      - tpi_network
+
+  orders-service:
+    build:
+      context: ./orders-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transportdb
+      SPRING_DATASOURCE_USERNAME: transportuser
+      SPRING_DATASOURCE_PASSWORD: transportpass
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/tpi
+    depends_on:
+      - postgres
+      - keycloak
+    ports:
+      - "8081:8080"
+    networks:
+      - tpi_network
+
+  fleet-service:
+    build:
+      context: ./fleet-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transportdb
+      SPRING_DATASOURCE_USERNAME: transportuser
+      SPRING_DATASOURCE_PASSWORD: transportpass
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/tpi
+    depends_on:
+      - postgres
+      - keycloak
+    ports:
+      - "8082:8080"
+    networks:
+      - tpi_network
+
+  warehouse-service:
+    build:
+      context: ./warehouse-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transportdb
+      SPRING_DATASOURCE_USERNAME: transportuser
+      SPRING_DATASOURCE_PASSWORD: transportpass
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/tpi
+    depends_on:
+      - postgres
+      - keycloak
+    ports:
+      - "8083:8080"
+    networks:
+      - tpi_network
+
+  pricing-service:
+    build:
+      context: ./pricing-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transportdb
+      SPRING_DATASOURCE_USERNAME: transportuser
+      SPRING_DATASOURCE_PASSWORD: transportpass
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/tpi
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      FUEL_PRICE_PER_LITRE: ${FUEL_PRICE_PER_LITRE:-1.5}
+    depends_on:
+      - postgres
+      - keycloak
+    ports:
+      - "8084:8080"
+    networks:
+      - tpi_network
+
+volumes:
+  postgres_data:
+
+networks:
+  tpi_network:
+    driver: bridge

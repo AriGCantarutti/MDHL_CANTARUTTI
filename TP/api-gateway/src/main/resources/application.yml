@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: orders-service
+          uri: http://orders-service:8080
+          predicates:
+            - Path=/api/orders/**,/api/requests/**,/api/clients/**,/api/containers/**
+          filters:
+            - StripPrefix=1
+        - id: fleet-service
+          uri: http://fleet-service:8080
+          predicates:
+            - Path=/api/trucks/**,/api/fleet/**
+          filters:
+            - StripPrefix=1
+        - id: warehouse-service
+          uri: http://warehouse-service:8080
+          predicates:
+            - Path=/api/warehouses/**,/api/warehouse/**
+          filters:
+            - StripPrefix=1
+        - id: pricing-service
+          uri: http://pricing-service:8080
+          predicates:
+            - Path=/api/pricing/**,/api/routes/**,/api/estimation/**
+          filters:
+            - StripPrefix=1
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/tpi}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
