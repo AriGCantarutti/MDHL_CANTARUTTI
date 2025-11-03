@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: solicitudes-service
+          uri: http://solicitudes-service:8081
+          predicates:
+            - Path=/api/solicitudes/**
+          filters:
+            - StripPrefix=2
+        - id: logistica-service
+          uri: http://logistica-service:8082
+          predicates:
+            - Path=/api/logistica/**
+          filters:
+            - StripPrefix=2
+        - id: tarifas-service
+          uri: http://tarifas-service:8083
+          predicates:
+            - Path=/api/tarifas/**
+          filters:
+            - StripPrefix=2
+        - id: tracking-service
+          uri: http://tracking-service:8084
+          predicates:
+            - Path=/api/tracking/**
+          filters:
+            - StripPrefix=2
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:8080/realms/transportista-realm/protocol/openid-connect/certs
+
+server:
+  port: 8000
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

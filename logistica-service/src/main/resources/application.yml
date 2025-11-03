@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: logistica-service
+  datasource:
+    url: jdbc:postgresql://postgres:5432/transportista_db
+    username: transportista_user
+    password: transportista_pass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Use KEYCLOAK_HOST env var with default 'localhost'
+          jwk-set-uri: http://${KEYCLOAK_HOST:localhost}:8080/realms/transportista-realm/protocol/openid-connect/certs
+
+server:
+  port: 8082
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    com.transportista.logistica: DEBUG
+    org.springframework.security: DEBUG
